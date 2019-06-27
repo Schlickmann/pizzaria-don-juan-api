@@ -29,7 +29,11 @@ routes.post(
   upload.single('image'),
   controllers.ProductController.store
 )
-routes.put('/products/:product_id', controllers.ProductController.update)
+routes.put(
+  '/products/:product_id',
+  upload.single('image'),
+  controllers.ProductController.update
+)
 routes.delete('/products/:product_id', controllers.ProductController.destroy)
 
 /**
@@ -43,6 +47,7 @@ routes.post(
 )
 routes.put(
   '/product_types/:product_type_id',
+  upload.single('image'),
   controllers.ProductTypeController.update
 )
 routes.delete(
@@ -64,6 +69,7 @@ routes.post(
 )
 routes.put(
   '/product_sizes/:product_size_id',
+  upload.single('image'),
   controllers.ProductSizeController.update
 )
 routes.delete(

@@ -21,6 +21,7 @@ class ProductTypeController {
 
   async update (req, res) {
     try {
+      let reqBody = {}
       const product = await ProductType.findOne({
         where: { id: req.params.product_type_id }
       })
@@ -29,10 +30,17 @@ class ProductTypeController {
         return res.status(400).json({ error: 'Product type not found.' })
       }
 
-      await ProductType.update(
-        { ...req.body },
-        { returning: true, where: { id: req.params.product_type_id } }
-      )
+      if (req.file) {
+        const { filename } = req.file
+        reqBody = { ...req.body, image: filename }
+      } else {
+        reqBody = { ...req.body }
+      }
+
+      await ProductType.update(reqBody, {
+        returning: true,
+        where: { id: req.params.product_type_id }
+      })
 
       return res
         .status(200)
