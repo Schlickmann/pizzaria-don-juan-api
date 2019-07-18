@@ -14,7 +14,7 @@ routes.post('/signup', controllers.UserController.store)
 routes.post('/signin', controllers.SessionController.store)
 
 routes.get('/images/:image', (req, res, next) => {
-  const img = path.resolve(__dirname, '..', 'temp', 'assets', req.params.image)
+  const img = path.resolve('..', '..', 'temp', 'assets', req.params.image)
 
   try {
     res.sendFile(img)
