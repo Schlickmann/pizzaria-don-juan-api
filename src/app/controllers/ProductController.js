@@ -49,6 +49,7 @@ class ProductController {
 
       return res.status(200).json({ message: `Product updated successfully.` })
     } catch (err) {
+      console.log(err)
       return res.status(500).json({
         error: `Something went wrong. The product was not updated.`
       })
