@@ -1,12 +1,15 @@
 const { ProductType } = require('../models')
-const path = require('path')
-const fs = require('fs')
+const Utils = require('../../utils/uploadAWS')
 
 class ProductTypeController {
   async store (req, res) {
     try {
-      const { filename } = req.file
-      await ProductType.create({ ...req.body, image: filename })
+      let location = ''
+      if (req.file) {
+        location = await Utils.store(req.file)
+      }
+
+      await ProductType.create({ ...req.body, image: location })
     } catch (err) {
       return res.status(500).json({
         error: `Something went wrong. The product type ${
@@ -31,8 +34,8 @@ class ProductTypeController {
       }
 
       if (req.file) {
-        const { filename } = req.file
-        reqBody = { ...req.body, image: filename }
+        const location = await Utils.store(req.file)
+        reqBody = { ...req.body, image: location }
       } else {
         reqBody = { ...req.body }
       }
@@ -63,17 +66,6 @@ class ProductTypeController {
       }
 
       await ProductType.destroy({ where: { id: req.params.product_type_id } })
-      fs.unlinkSync(
-        path.resolve(
-          __dirname,
-          '..',
-          '..',
-          '..',
-          'temp',
-          'assets',
-          product.image
-        )
-      )
 
       return res
         .status(200)

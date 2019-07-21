@@ -1,12 +1,16 @@
 const { Product } = require('../models')
-const path = require('path')
-const fs = require('fs')
+
+const Utils = require('../../utils/uploadAWS')
 
 class ProductController {
   async store (req, res) {
     try {
-      const { filename } = req.file
-      await Product.create({ ...req.body, image: filename })
+      let location = ''
+      if (req.file) {
+        location = await Utils.store(req.file)
+      }
+
+      await Product.create({ ...req.body, image: location })
     } catch (err) {
       return res.status(500).json({
         error: `Something went wrong. The product ${
@@ -31,16 +35,17 @@ class ProductController {
       }
 
       if (req.file) {
-        const { filename } = req.file
-        reqBody = { ...req.body, image: filename }
+        const location = await Utils.store(req.file)
+
+        reqBody = { ...req.body, image: location }
       } else {
         reqBody = { ...req.body }
       }
 
-      await Product.update(
-        reqBody,
-        { returning: true, where: { id: req.params.product_id } }
-      )
+      await Product.update(reqBody, {
+        returning: true,
+        where: { id: req.params.product_id }
+      })
 
       return res.status(200).json({ message: `Product updated successfully.` })
     } catch (err) {
@@ -61,17 +66,6 @@ class ProductController {
       }
 
       await Product.destroy({ where: { id: req.params.product_id } })
-      fs.unlinkSync(
-        path.resolve(
-          __dirname,
-          '..',
-          '..',
-          '..',
-          'temp',
-          'assets',
-          product.image
-        )
-      )
 
       return res.status(200).json({ message: `Product deleted successfully.` })
     } catch (err) {

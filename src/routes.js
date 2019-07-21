@@ -1,5 +1,4 @@
 const express = require('express')
-const path = require('path')
 const multerConfig = require('./config/multer')
 const upload = require('multer')(multerConfig)
 
@@ -12,16 +11,6 @@ const controllers = require('./app/controllers')
 routes.post('/signup', controllers.UserController.store)
 
 routes.post('/signin', controllers.SessionController.store)
-
-routes.get('/images/:image', (req, res, next) => {
-  const img = path.resolve('..', '..', 'temp', 'assets', req.params.image)
-
-  try {
-    res.sendFile(img)
-  } catch (err) {
-    next(err)
-  }
-})
 
 routes.use(authMiddleware)
 /**
